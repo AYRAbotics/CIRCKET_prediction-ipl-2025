@@ -219,7 +219,6 @@ def select_balanced_team(player_stats, n_batsmen=8, n_bowlers=3):
     # Enhanced bowling criteria for Jaipur conditions
     player_stats['BowlingScore'] = (
         player_stats['BowlingImpact'] * 0.5 +
-        (1 - player_stats['Economy']) * 30 +      # Lower economy is better
         player_stats['DotBallRate'] * 20          # Important for control
     )
     
@@ -228,10 +227,6 @@ def select_balanced_team(player_stats, n_batsmen=8, n_bowlers=3):
     bowlers = player_stats[player_stats['BattingScore'] < 25].nlargest(n_bowlers, 'BowlingScore')
     
     return pd.concat([batsmen, bowlers])
-
-# Make predictions
-player_stats['PredictionScore'] = dnn_model.predict(X_scaled)
-jaipur_xi = select_balanced_team(player_stats)
 
 # Display results with detailed stats
 print("\n🏏 Predicted Best XI for Jaipur Match:")
@@ -242,7 +237,7 @@ print(jaipur_xi[jaipur_xi['BowlingImpact'] < 15][
 
 print("\nBowlers:")
 print(jaipur_xi[jaipur_xi['BattingScore'] < 25][
-    ['Player', 'Team', 'BowlingScore', 'Economy', 'DotBallRate']
+    ['Player', 'Team', 'BowlingScore', 'BowlingImpact', 'DotBallRate']
 ].round(2))
 
 # Save predictions
